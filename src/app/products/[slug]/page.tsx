@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ProductDetailActions } from "@/components/product-detail-actions";
 import { ProductCard } from "@/components/product-card";
 import { SafeImage } from "@/components/safe-image";
-import { eurToBgnRate, formatCurrency, products } from "@/data/products";
+import { formatCurrency, products } from "@/data/products";
 
 type ProductDetailPageProps = {
   params: Promise<{ slug: string }>;
@@ -42,10 +43,10 @@ export default async function ProductDetailPage({
               >
                 <SafeImage
                   src={image}
-                  alt={product.name}
+                  alt={product.title}
                   fill
                   sizes="(min-width: 1024px) 35vw, 100vw"
-                  fallbackLabel={product.name}
+                  fallbackLabel={product.title}
                   className="object-cover"
                 />
               </div>
@@ -59,51 +60,19 @@ export default async function ProductDetailPage({
               </span>
             ) : null}
             <h1 className="mt-4 text-4xl font-semibold tracking-tight">
-              {product.name}
+              {product.title}
             </h1>
             <p className="mt-3 text-slate-500">{product.label}</p>
             <div className="mt-6">
               <p className="font-mono text-2xl font-semibold">
-                {formatCurrency(product.priceEur, "EUR")}
+                {formatCurrency(product.priceEUR, "EUR")}
               </p>
               <p className="mt-1 font-mono text-sm text-slate-500">
-                {formatCurrency(product.priceEur * eurToBgnRate, "BGN")}
+                {formatCurrency(product.priceBGN, "BGN")}
               </p>
             </div>
 
-            <div className="mt-8">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold">Размер</h2>
-                <button className="text-sm font-semibold text-teal-700">
-                  Таблица с размери
-                </button>
-              </div>
-              <div className="mt-3 grid grid-cols-4 gap-2">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    className="h-12 rounded-md border border-slate-200 text-sm font-semibold transition hover:border-slate-950"
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-6 flex gap-3">
-              <div className="flex h-12 items-center rounded-md border border-slate-200">
-                <button className="h-12 w-11" type="button">
-                  -
-                </button>
-                <span className="font-mono text-sm">1</span>
-                <button className="h-12 w-11" type="button">
-                  +
-                </button>
-              </div>
-              <button className="h-12 flex-1 rounded-md bg-teal-700 px-6 text-sm font-bold text-white transition hover:bg-slate-950">
-                Добави в количката
-              </button>
-            </div>
+            <ProductDetailActions product={product} />
 
             <div className="mt-8 divide-y divide-slate-200 rounded-lg border border-slate-200">
               {[

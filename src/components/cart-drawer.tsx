@@ -2,15 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { eurToBgnRate, formatCurrency, products } from "@/data/products";
+import { useCart } from "@/components/cart-provider";
 import { SafeImage } from "@/components/safe-image";
-
-const demoItem = products[0];
+import { eurToBgnRate, formatCurrency } from "@/data/products";
 
 export function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
-  const [hasItem, setHasItem] = useState(true);
-  const total = demoItem.priceEur;
+  const { items, itemCount, totalEUR, removeItem, updateQuantity } = useCart();
   const canUseDom = typeof document !== "undefined";
 
   useEffect(() => {
@@ -35,8 +33,8 @@ export function CartDrawer() {
         onClick={() => setIsOpen(false)}
       />
       <aside className="fixed right-0 top-0 z-[101] flex h-full w-full max-w-[420px] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-2xl sm:w-[420px]">
-        <div className="shrink-0 bg-white">
-          <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-4 sm:px-6 sm:py-5">
+        <div className="shrink-0 border-b border-slate-200 bg-white px-4 py-4 sm:px-6 sm:py-5">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-700">
                 Твоята поръчка
@@ -56,73 +54,100 @@ export function CartDrawer() {
           </div>
         </div>
 
-        {hasItem ? (
+        {items.length ? (
           <>
             <div className="flex-1 overflow-y-auto bg-white px-4 py-4 sm:px-6 sm:py-6">
-              <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="flex gap-3 sm:gap-4">
-                  <div className="relative h-24 w-20 shrink-0 overflow-hidden rounded-md bg-slate-100 sm:h-28 sm:w-24">
-                    <SafeImage
-                      src={demoItem.image}
-                      alt={demoItem.name}
-                      fill
-                      sizes="96px"
-                      fallbackLabel={demoItem.name}
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-                      <div>
-                        <h3 className="font-semibold leading-5 tracking-tight text-slate-950">
-                          {demoItem.name}
-                        </h3>
-                        <p className="mt-1 text-sm font-medium text-slate-600">
-                          Размер M · Черно
-                        </p>
+              <div className="grid gap-3">
+                {items.map((item) => (
+                  <div
+                    key={`${item.product.id}-${item.size}`}
+                    className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                  >
+                    <div className="flex gap-3 sm:gap-4">
+                      <div className="relative h-24 w-20 shrink-0 overflow-hidden rounded-md bg-slate-100 sm:h-28 sm:w-24">
+                        <SafeImage
+                          src={item.product.image}
+                          alt={item.product.title}
+                          fill
+                          sizes="96px"
+                          fallbackLabel={item.product.title}
+                          className="object-cover"
+                        />
                       </div>
-                      <div className="text-left sm:text-right">
-                        <p className="font-mono text-sm font-bold text-slate-950">
-                          {formatCurrency(demoItem.priceEur, "EUR")}
-                        </p>
-                        <p className="mt-0.5 font-mono text-xs font-semibold text-slate-500">
-                          {formatCurrency(demoItem.priceEur * eurToBgnRate, "BGN")}
-                        </p>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                          <div>
+                            <h3 className="font-semibold leading-5 tracking-tight text-slate-950">
+                              {item.product.title}
+                            </h3>
+                            <p className="mt-1 text-sm font-medium text-slate-600">
+                              Размер {item.size}
+                            </p>
+                          </div>
+                          <div className="text-left sm:text-right">
+                            <p className="font-mono text-sm font-bold text-slate-950">
+                              {formatCurrency(item.product.priceEUR, "EUR")}
+                            </p>
+                            <p className="mt-0.5 font-mono text-xs font-semibold text-slate-500">
+                              {formatCurrency(item.product.priceBGN, "BGN")}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-4 flex items-center justify-between gap-3 sm:mt-5">
+                          <div className="flex h-10 items-center rounded-full border border-slate-200 bg-slate-50">
+                            <button
+                              className="h-10 w-10 text-slate-600"
+                              type="button"
+                              onClick={() =>
+                                updateQuantity(
+                                  item.product.id,
+                                  item.size,
+                                  item.quantity - 1,
+                                )
+                              }
+                            >
+                              -
+                            </button>
+                            <span className="w-7 text-center font-mono text-sm font-semibold">
+                              {item.quantity}
+                            </span>
+                            <button
+                              className="h-10 w-10 text-slate-600"
+                              type="button"
+                              onClick={() =>
+                                updateQuantity(
+                                  item.product.id,
+                                  item.size,
+                                  item.quantity + 1,
+                                )
+                              }
+                            >
+                              +
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.product.id, item.size)}
+                            className="text-sm font-semibold text-slate-500 transition hover:text-slate-950"
+                          >
+                            Премахни
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    <div className="mt-4 flex items-center justify-between gap-3 sm:mt-5">
-                      <div className="flex h-10 items-center rounded-full border border-slate-200 bg-slate-50">
-                        <button className="h-10 w-10 text-slate-600" type="button">
-                          -
-                        </button>
-                        <span className="w-7 text-center font-mono text-sm font-semibold">
-                          1
-                        </span>
-                        <button className="h-10 w-10 text-slate-600" type="button">
-                          +
-                        </button>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setHasItem(false)}
-                        className="text-sm font-semibold text-slate-500 transition hover:text-slate-950"
-                      >
-                        Премахни
-                      </button>
-                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
             <div className="shrink-0 border-t border-slate-200 bg-white px-4 py-5 shadow-[0_-12px_24px_rgba(15,23,42,0.04)] sm:px-6">
               <div className="flex items-center justify-between text-sm font-semibold text-slate-600">
                 <span>Междинна сума</span>
                 <span className="font-mono text-xl font-bold text-slate-950">
-                  {formatCurrency(total, "EUR")}
+                  {formatCurrency(totalEUR, "EUR")}
                 </span>
               </div>
               <p className="mt-1 text-right font-mono text-xs text-slate-500">
-                {formatCurrency(total * eurToBgnRate, "BGN")}
+                {formatCurrency(totalEUR * eurToBgnRate, "BGN")}
               </p>
               <button className="mt-5 h-12 w-full rounded-md bg-teal-700 text-sm font-bold text-white shadow-sm transition hover:bg-slate-950 hover:shadow-md">
                 Към поръчка
@@ -142,17 +167,17 @@ export function CartDrawer() {
                 Количката е празна
               </h3>
               <p className="mt-3 max-w-xs text-sm leading-6 text-slate-600">
-                Добави продукт и ще видиш ясна сума, доставка и следваща
+                Избери размер и добави продукт, за да видиш сумата и следващата
                 стъпка за поръчка.
               </p>
             </div>
             <div className="shrink-0 border-t border-slate-200 bg-white px-4 py-5 sm:px-6">
               <button
                 type="button"
-                onClick={() => setHasItem(true)}
+                onClick={() => setIsOpen(false)}
                 className="h-11 w-full rounded-md bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-teal-700"
               >
-                Върни примерен продукт
+                Продължи пазаруването
               </button>
             </div>
           </>
@@ -166,13 +191,13 @@ export function CartDrawer() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="relative h-11 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-950 shadow-sm transition hover:border-slate-950"
+        className="relative h-11 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-950 shadow-sm transition hover:border-slate-950 sm:px-5"
         aria-label="Отвори количката"
       >
         Количка
-        {hasItem ? (
+        {itemCount ? (
           <span className="ml-2 rounded-full bg-teal-700 px-2 py-0.5 font-mono text-xs text-white">
-            1
+            {itemCount}
           </span>
         ) : null}
       </button>

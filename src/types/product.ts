@@ -1,10 +1,14 @@
 export type Product = {
   id: string;
   slug: string;
-  name: string;
+  title: string;
   category: "men" | "women" | "kids";
   label: string;
-  priceEur: number;
+  isNew: boolean;
+  isPromo: boolean;
+  isBestseller: boolean;
+  priceEUR: number;
+  priceBGN: number;
   compareAtEur?: number;
   image: string;
   images: string[];

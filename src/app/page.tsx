@@ -118,7 +118,7 @@ function Hero() {
               Пазарувай сега
             </Link>
             <Link
-              href="#new"
+              href="/products?category=new"
               className="flex h-14 items-center justify-center rounded-md border border-white/35 px-7 text-sm font-bold text-white transition duration-200 hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-slate-950"
             >
               Виж новите модели
@@ -284,7 +284,7 @@ function ProductSection({
             </h2>
           </div>
           <Link
-            href="/products"
+            href="/products?category=new"
             className="h-11 rounded-md border border-slate-300 px-5 py-3 text-center text-sm font-semibold transition hover:border-slate-950"
           >
             {cta}
@@ -317,7 +317,7 @@ function BestsellerSection() {
             валута, кратки ползи и бързо добавяне без разсейване.
           </p>
           <Link
-            href="/products"
+            href="/products?filter=bestseller"
             className="mt-7 inline-flex h-12 items-center rounded-md bg-slate-950 px-6 text-sm font-semibold text-white transition hover:bg-teal-700"
           >
             Виж бестселърите
@@ -427,7 +427,7 @@ function PromoBanner() {
             само когато всичко е наред.
           </p>
           <Link
-            href="/products"
+            href="/products?filter=promo"
             className="mt-8 inline-flex h-12 items-center rounded-md bg-teal-600 px-7 text-sm font-bold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:text-slate-950"
           >
             Пазарувай промо
@@ -463,9 +463,9 @@ function Footer() {
         <div>
           <h3 className="text-sm font-semibold">Магазин</h3>
           <div className="mt-4 grid gap-3 text-sm text-slate-300">
-            <Link href="/products">Нови продукти</Link>
-            <Link href="/products">Промоции</Link>
-            <Link href="/products">Размери</Link>
+            <Link href="/products?category=new">Нови продукти</Link>
+            <Link href="/products?filter=promo">Промоции</Link>
+            <Link href="/products?size=M">Размери</Link>
           </div>
         </div>
         <div>
