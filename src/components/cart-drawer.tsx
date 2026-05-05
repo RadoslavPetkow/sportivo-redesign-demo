@@ -1,14 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useCart } from "@/components/cart-provider";
 import { SafeImage } from "@/components/safe-image";
-import { eurToBgnRate, formatCurrency } from "@/data/products";
+import { formatCurrency } from "@/data/products";
 
 export function CartDrawer() {
   const [isOpen, setIsOpen] = useState(false);
-  const { items, itemCount, totalEUR, removeItem, updateQuantity } = useCart();
+  const { items, itemCount, totalEUR, totalBGN, removeItem, updateQuantity } =
+    useCart();
   const canUseDom = typeof document !== "undefined";
 
   useEffect(() => {
@@ -147,11 +149,15 @@ export function CartDrawer() {
                 </span>
               </div>
               <p className="mt-1 text-right font-mono text-xs text-slate-500">
-                {formatCurrency(totalEUR * eurToBgnRate, "BGN")}
+                {formatCurrency(totalBGN, "BGN")}
               </p>
-              <button className="mt-5 h-12 w-full rounded-md bg-teal-700 text-sm font-bold text-white shadow-sm transition hover:bg-slate-950 hover:shadow-md">
+              <Link
+                href="/checkout"
+                onClick={() => setIsOpen(false)}
+                className="mt-5 flex h-12 w-full items-center justify-center rounded-md bg-teal-700 text-sm font-bold text-white shadow-sm transition hover:bg-slate-950 hover:shadow-md"
+              >
                 Към поръчка
-              </button>
+              </Link>
               <p className="mt-3 text-center text-xs font-medium text-slate-500">
                 Плащане при доставка и безплатна замяна на размер.
               </p>
@@ -172,13 +178,13 @@ export function CartDrawer() {
               </p>
             </div>
             <div className="shrink-0 border-t border-slate-200 bg-white px-4 py-5 sm:px-6">
-              <button
-                type="button"
+              <Link
+                href="/products"
                 onClick={() => setIsOpen(false)}
-                className="h-11 w-full rounded-md bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-teal-700"
+                className="flex h-11 w-full items-center justify-center rounded-md bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-teal-700"
               >
                 Продължи пазаруването
-              </button>
+              </Link>
             </div>
           </>
         )}

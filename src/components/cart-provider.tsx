@@ -19,9 +19,11 @@ type CartContextValue = {
   items: CartItem[];
   itemCount: number;
   totalEUR: number;
+  totalBGN: number;
   addItem: (product: Product, size: string) => void;
   removeItem: (productId: string, size: string) => void;
   updateQuantity: (productId: string, size: string, quantity: number) => void;
+  clearCart: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -35,11 +37,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       (sum, item) => sum + item.product.priceEUR * item.quantity,
       0,
     );
+    const totalBGN = items.reduce(
+      (sum, item) => sum + item.product.priceBGN * item.quantity,
+      0,
+    );
 
     return {
       items,
       itemCount,
       totalEUR,
+      totalBGN,
       addItem(product, size) {
         setItems((current) => {
           const existing = current.find(
@@ -78,6 +85,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
               : item,
           );
         });
+      },
+      clearCart() {
+        setItems([]);
       },
     };
   }, [items]);
